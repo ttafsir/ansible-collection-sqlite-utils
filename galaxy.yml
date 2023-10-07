@@ -1,0 +1,41 @@
+---
+namespace: ttafsir
+name: ansible_sqlite_utils
+version: 1.0.0
+readme: README.md
+
+authors:
+- Tafsir Thiam <ttafsir@gmail.com>
+
+description: A collection of Ansible plugins to manage SQLite databases leveraging the `sqlite-utils` Python package.
+
+# Either a single license or a list of licenses for content inside of a collection. Ansible Galaxy currently only
+# accepts L(SPDX,https://spdx.org/licenses/) licenses. This key is mutually exclusive with 'license_file'
+license:
+  - MIT
+
+tags:
+  - database
+  - sqlite
+  - sqlite-utils
+  - sqlite3
+  - utils
+
+dependencies: {}
+
+# Repositories
+repository: https://github.com/ttafsir/ansible-sqlite-utils
+documentation: https://github.com/ttafsir/ansible-sqlite-utils/blob/main/README.md
+homepage: https://github.com/ttafsir/ansible-sqlite-utils
+issues: https://github.com/ttafsir/ansible-sqlite-utils/issues
+
+# A list of file glob-like patterns used to filter any files or directories that should not be included in the build
+# artifact. A pattern is matched from the relative path of the file or directory of the collection directory. This
+# uses 'fnmatch' to match the files or directories. Some directories and files like 'galaxy.yml', '*.pyc', '*.retry',
+# and '.git' are always filtered. Mutually exclusive with 'manifest'
+build_ignore:
+  - '*.build/'
+  - '.github/*'
+  - 'docs/*'
+  - '.env'
+  - '*.local*'
