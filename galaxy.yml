@@ -1,11 +1,11 @@
 ---
 namespace: ttafsir
 name: ansible_sqlite_utils
-version: 1.0.0
+version: "1.0.0"
 readme: README.md
 
 authors:
-- Tafsir Thiam <ttafsir@gmail.com>
+  - Tafsir Thiam <ttafsir@gmail.com>
 
 description: A collection of Ansible plugins to manage SQLite databases leveraging the `sqlite-utils` Python package.
 
