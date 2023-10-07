@@ -1,5 +1,8 @@
 # Ansible Collection - ttafsir.ansible_sqlite_utils
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/ttafsir/ansible-collection-sqlite-utils/actions/workflows/ci.yml/badge.svg)](https://github.com/ttafsir/ansible-collection-sqlite-utils/actions/workflows/ci.yml)
+
 A collection of Ansible plugins to manage SQLite databases leveraging the `sqlite-utils` Python package.
 
 ## Requirements
