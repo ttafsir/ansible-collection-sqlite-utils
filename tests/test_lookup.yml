@@ -1,0 +1,69 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    where_arg: {"subject": "Peek #4"}
+    database: "database.sqlite"
+
+  tasks:
+    - name: BLOCK | Create a SQLite database and insert sample data
+      block:
+        - name: Insert sample data into emails table in JSON
+          copy:
+            content: |
+              [
+                {"email_id": 1, "subject": "Hello World", "body": "First email body"},
+                {"email_id": 2, "subject": "Meeting Tomorrow", "body": "Reminder for the meeting"},
+                {"email_id": 3, "subject": "Peek #4", "body": "Content of Peek #4"},
+                {"email_id": 4, "subject": "Final Notice", "body": "This is your final notice"}
+              ]
+            dest: "emails.json"
+
+        - name: Create the emails table in SQLite using sqlite-utils CLI
+          command: "sqlite-utils insert database.sqlite emails emails.json  --pk=email_id"
+          register: create_db_result
+
+      rescue:
+        - name: if UNIQUE constraint failed, the just print the error
+          debug:
+            msg: "UNIQUE constraint failed"
+          when: create_db_result.stderr.find("UNIQUE constraint failed") != -1
+
+    # Rest of your playbook tasks...
+    - name: Fetch all rows from SQLite
+      debug:
+        msg: "{{ lookup('sqlite', table='emails', db_path=database) }}"
+
+    - name: Fetch single column from SQLite
+      debug:
+        msg: "{{ lookup('sqlite', table='emails', db_path=database, select='email_id') }}"
+
+    - name: Fetch two columns from SQLite
+      debug:
+        msg: "{{ lookup('sqlite', table='emails', db_path=database, select='email_id, subject') }}"
+
+    - name: Fetch single row from SQLite
+      debug:
+        msg: "{{
+          lookup(
+            'sqlite',
+            table='emails',
+            db_path=database,
+            where='subject = :subject',
+            where_args=where_arg
+          )
+          }}"
+
+    - name: Loop through all rows
+      debug:
+        msg: "{{ item.subject }}"
+      loop: "{{ lookup('sqlite', table='emails', db_path=database) }}"
+
+    # Cleanup: Remove the JSON files
+    - name: Cleanup JSON files
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "./emails.json"
+        - "database.sqlite"
