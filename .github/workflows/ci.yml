@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.9", "3.10"]
         os: [ubuntu-latest]
 
     steps:
@@ -34,14 +34,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest flake8 black isort yamllint
 
-      - name: run flake8 if Python 3.8 or higher
-        if: matrix.python-version >= 3.8
-        run: flake8
-
       - name: Check formatting & lint
         run: |
           black . --check
           yamllint .
+          flake8
 
       - name: Install test dependencies
         run: pip install -r requirements.txt
