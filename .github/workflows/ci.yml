@@ -46,7 +46,7 @@ jobs:
       - name: Build and install collection
         run: |
           ansible-galaxy collection build . --output-path .build --force
-          ansible-galaxy collection install .build/ttafsir-ansible_sqlite_utils-*.tar.gz --force
+          ansible-galaxy collection install .build/ttafsir-sqlite_utils-*.tar.gz --force
 
       - name: Run tests
         run: |

@@ -1,6 +1,6 @@
 ---
 namespace: ttafsir
-name: ansible_sqlite_utils
+name: sqlite_utils
 version: "1.0.0"
 readme: README.md
 
