@@ -1,4 +1,4 @@
-# Ansible Collection - ttafsir.ansible_sqlite_utils
+# Ansible Collection - ttafsir.sqlite_utils
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CI](https://github.com/ttafsir/ansible-collection-sqlite-utils/actions/workflows/ci.yml/badge.svg)](https://github.com/ttafsir/ansible-collection-sqlite-utils/actions/workflows/ci.yml)
@@ -14,7 +14,7 @@ A collection of Ansible plugins to manage SQLite databases leveraging the `sqlit
 You can install the collection from Ansible Galaxy:
 
 ```bash
-ansible-galaxy collection install ttafsir.ansible_sqlite_utils
+ansible-galaxy collection install ttafsir.sqlite_utils
 ```
 
 ### From Source
@@ -25,7 +25,7 @@ Clone the repository from GitHub:
 git clone https://github.com/ttafsir/ansible-sqlite-utils.git
 cd ansible-sqlite-utils
 ansible-galaxy collection build
-ansible-galaxy collection install ./ttafsir-ansible_sqlite_utils-*.tar.gz
+ansible-galaxy collection install ./ttafsir-sqlite_utils-*.tar.gz
 ```
 
 ## License
