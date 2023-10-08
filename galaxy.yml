@@ -17,7 +17,7 @@ license:
 tags:
   - database
   - sqlite
-  - sqlite-utils
+  - sqlite_utils
   - sqlite3
   - utils
 
@@ -39,3 +39,4 @@ build_ignore:
   - 'docs/*'
   - '.env'
   - '*.local*'
+  - '.venv'
