@@ -32,21 +32,21 @@
     # Rest of your playbook tasks...
     - name: Fetch all rows from SQLite
       debug:
-        msg: "{{ lookup('sqlite', table='emails', db_path=database) }}"
+        msg: "{{ lookup('ttafsir.ansible_sqlite_utils.sqlite', table='emails', db_path=database) }}"
 
     - name: Fetch single column from SQLite
       debug:
-        msg: "{{ lookup('sqlite', table='emails', db_path=database, select='email_id') }}"
+        msg: "{{ lookup('ttafsir.ansible_sqlite_utils.sqlite', table='emails', db_path=database, select='email_id') }}"
 
     - name: Fetch two columns from SQLite
       debug:
-        msg: "{{ lookup('sqlite', table='emails', db_path=database, select='email_id, subject') }}"
+        msg: "{{ lookup('ttafsir.ansible_sqlite_utils.sqlite', table='emails', db_path=database, select='email_id, subject') }}"
 
     - name: Fetch single row from SQLite
       debug:
         msg: "{{
           lookup(
-            'sqlite',
+            'ttafsir.ansible_sqlite_utils.sqlite',
             table='emails',
             db_path=database,
             where='subject = :subject',
@@ -57,7 +57,7 @@
     - name: Loop through all rows
       debug:
         msg: "{{ item.subject }}"
-      loop: "{{ lookup('sqlite', table='emails', db_path=database) }}"
+      loop: "{{ lookup('ttafsir.ansible_sqlite_utils.sqlite', table='emails', db_path=database) }}"
 
     # Cleanup: Remove the JSON files
     - name: Cleanup JSON files
