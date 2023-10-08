@@ -22,7 +22,7 @@ ansible-galaxy collection install ttafsir.sqlite_utils
 Clone the repository from GitHub:
 
 ```bash
-git clone https://github.com/ttafsir/ansible-sqlite-utils.git
+git clone https://github.com/ttafsir/ansible-collection-sqlite-utils.git
 cd ansible-sqlite-utils
 ansible-galaxy collection build
 ansible-galaxy collection install ./ttafsir-sqlite_utils-*.tar.gz
@@ -30,7 +30,7 @@ ansible-galaxy collection install ./ttafsir-sqlite_utils-*.tar.gz
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](https://github.com/ttafsir/ansible-sqlite-utils/blob/main/LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/ttafsir/ansible-collection-sqlite-utils/blob/main/LICENSE) file for details.
 
 ## Links
 
