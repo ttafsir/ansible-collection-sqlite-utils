@@ -13,8 +13,7 @@ A collection of Ansible plugins to manage SQLite databases leveraging the `sqlit
 
 You can install the collection from Ansible Galaxy:
 
-```
-bashCopy code
+```bash
 ansible-galaxy collection install ttafsir.ansible_sqlite_utils
 ```
 
