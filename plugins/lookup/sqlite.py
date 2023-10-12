@@ -45,24 +45,24 @@ requirements:
 EXAMPLES = r"""
 - name: Fetch all rows from SQLite
   debug:
-    msg: "{{ lookup('sqlite', table='emails', db_path='database.db') }}"
+    msg: "{{ lookup('ttafsir.sqlite_utils.sqlite', table='emails', db_path='database.db') }}"
 
 - name: Fetch single column from SQLite
   debug:
-    msg: "{{ lookup('sqlite', table='emails', db_path='database.db', select='email_id') }}"
+    msg: "{{ lookup('ttafsir.sqlite_utils.sqlite', table='emails', db_path='database.db', select='email_id') }}"
 
 - name: Fetch two columns from SQLite
   debug:
-    msg: "{{ lookup('sqlite', table='emails', db_path='database.db', select='email_id, subject') }}"
+    msg: "{{ lookup('ttafsir.sqlite_utils.sqlite', table='emails', db_path='database.db', select='email_id, subject') }}"
 
 - name: Fetch single row using a WHERE clause
   debug:
-    msg: "{{ lookup('sqlite', table='emails', db_path='database.db', where='subject = :subject', where_args={'subject': 'Peek #4'}) }}"
+    msg: "{{ lookup('ttafsir.sqlite_utils.sqlite', table='emails', db_path='database.db', where='subject = :subject', where_args={'subject': 'Peek #4'}) }}"
 
 - name: Loop through all rows and display a specific column
   debug:
     msg: "{{ item.subject }}"
-  loop: "{{ lookup('sqlite', table='emails', db_path='database.db') }}"
+  loop: "{{ lookup('ttafsir.sqlite_utils.sqlite', table='emails', db_path='database.db') }}"
 """
 from ansible.errors import AnsibleError
 from ansible.plugins.lookup import LookupBase

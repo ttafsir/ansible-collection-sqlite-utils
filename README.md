@@ -11,22 +11,52 @@ A collection of Ansible plugins to manage SQLite databases leveraging the `sqlit
 -  `sqlite-utils` package
 
 
-You can install the collection from Ansible Galaxy:
+## Collection contents
 
-```bash
-ansible-galaxy collection install ttafsir.sqlite_utils
+### Plugins
+
+#### Lookup Plugins
+
+* `ttafsir.sqlite_utils.sqlite`: A lookup plugin that returns query results from a sqlite database using the `rows_where` method.
+
+
+## Usage Examples
+
+###  Lookup
+
+```yaml
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    where_arg: {"subject": "Peek #4"}
+
+  tasks:
+
+    - name: Fetch two columns from SQLite
+      debug:
+        msg: "{{
+          lookup(
+            'ttafsir.sqlite_utils.sqlite',
+            table='emails',
+            db_path=database,
+            select='email_id, subject')
+        }}"
+
+    - name: Fetch row from SQLite where email subject matches
+      debug:
+        msg: "{{
+          lookup(
+            'ttafsir.sqlite_utils.sqlite',
+            table='emails',
+            db_path='database.sqlite',
+            where='subject = :subject',
+            where_args=where_arg
+          )
+        }}"
 ```
 
-### From Source
-
-Clone the repository from GitHub:
-
-```bash
-git clone https://github.com/ttafsir/ansible-collection-sqlite-utils.git
-cd ansible-sqlite-utils
-ansible-galaxy collection build
-ansible-galaxy collection install ./ttafsir-sqlite_utils-*.tar.gz
-```
+See the lookup plugin documentation for more details.
 
 ## License
 
