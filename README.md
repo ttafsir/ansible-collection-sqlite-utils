@@ -15,12 +15,34 @@ A collection of Ansible plugins to manage SQLite databases leveraging the `sqlit
 
 ### Plugins
 
+### Modules
+
+* `ttafsir.sqlite_utils.query`: Ansible module to query a sqlite database and return list of dictionaries.
+
 #### Lookup Plugins
 
 * `ttafsir.sqlite_utils.sqlite`: A lookup plugin that returns query results from a sqlite database using the `rows_where` method.
 
 
 ## Usage Examples
+
+### `query` module
+
+```yaml
+    - name: Fetch data from database
+      ttafsir.sqlite_utils.query:
+        db_path: database.sqlite
+        query: "SELECT * FROM emails ORDER BY email_id"
+      register: query_result
+
+
+    - name: Fetch data based on ID using parameter for safer query
+      ttafsir.sqlite_utils.query:
+        db_path: database.sqlite
+        query: "SELECT * FROM emails WHERE email_id = ?;"
+        params: [3]
+      register: query_result_params
+```
 
 ###  Lookup
 
