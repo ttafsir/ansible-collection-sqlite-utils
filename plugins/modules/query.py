@@ -89,6 +89,7 @@ import os
 
 try:
     import sqlite_utils
+
     HAS_SQLITE_UTILS = True
 except ImportError:
     HAS_SQLITE_UTILS = False
