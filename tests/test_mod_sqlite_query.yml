@@ -30,7 +30,7 @@
           when: create_db_result.stderr.find("UNIQUE constraint failed") != -1
 
     - name: Fetch data from database
-      ttafsir.sqlite_utils.query:
+      ttafsir.sqlite_utils.run_sql:
         db_path: database.sqlite
         query: "SELECT * FROM emails ORDER BY email_id"
       register: query_result
@@ -42,7 +42,7 @@
         fail_msg: "The number of rows in the emails table is not 4"
 
     - name: Fetch data based on ID
-      ttafsir.sqlite_utils.query:
+      ttafsir.sqlite_utils.run_sql:
         db_path: database.sqlite
         query: "SELECT * FROM emails WHERE email_id = ?;"
         params: [3]
@@ -53,3 +53,22 @@
         that:
           - query_result_params.rows[0].subject == where_arg.subject
         fail_msg: "The subject of the email with ID 4 is not {{ where_arg.subject }}"
+
+    - name: Fetch data based on name and age
+      ttafsir.sqlite_utils.run_sql:
+        db_path: database.sqlite
+        query: |-
+          SELECT * FROM emails
+          WHERE subject = :subject
+          AND email_id = :email_id
+        params:
+          subject: "Hello World"
+          email_id: 1
+      register: query_result_params
+
+    - name: Update data based on ID
+      ttafsir.sqlite_utils.run_sql:
+        db_path: database.sqlite
+        query: "UPDATE emails SET subject = ? WHERE email_id = ?;"
+        params: ["Hello World Updated", 1]
+      register: update_result
