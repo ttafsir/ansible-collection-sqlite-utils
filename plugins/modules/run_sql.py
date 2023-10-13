@@ -110,9 +110,6 @@ class SQLiteDatabaseModule(AnsibleModule):
             )
 
     def run_sql(self, db_path: str, query, params=None, db_options=None):
-        aggregated_results = []
-        was_changed = False
-
         if not os.path.exists(db_path):
             self.fail_json(
                 msg=f"Database path {db_path} does not exist or is not accessible."
