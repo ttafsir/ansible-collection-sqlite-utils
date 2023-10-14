@@ -17,11 +17,11 @@ A collection of Ansible plugins to manage SQLite databases leveraging the `sqlit
 
 ### Modules
 
-* `ttafsir.sqlite_utils.query`: Ansible module to query a sqlite database and return list of dictionaries.
+* `ttafsir.sqlite_utils.run_sql`: Ansible module to query a sqlite database and return list of dictionaries.
 
 #### Lookup Plugins
 
-* `ttafsir.sqlite_utils.sqlite`: A lookup plugin that returns query results from a sqlite database using the `rows_where` method.
+* `ttafsir.sqlite_utils.sqlite`: A lookup plugin that returns query results from a sqlite database using the sqlite-utils library.
 
 
 ## Usage Examples
