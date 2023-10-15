@@ -1,0 +1,105 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    where_arg: {"subject": "Hello World 2"}
+    database: "database.db"
+
+  tasks:
+    - name: Create database
+      ttafsir.sqlite_utils.create:
+        db_path: database.db
+        table: emails
+        columns:
+          email_id: int
+          subject: str
+          body: str
+        pk: email_id
+        if_not_exists: true
+
+    - name: Insert single records into database
+      ttafsir.sqlite_utils.insert:
+        db_path: database.db
+        table: emails
+        records: {"email_id": 2, "subject": "Hello World 2", "body": "body of the email"}
+        replace: true  # if record exists, replace it
+
+    - name: BLOCK | attempt bulk insert and rescue on UNIQUE constraint
+      block:
+        - name: Bulk insert data into database
+          ttafsir.sqlite_utils.insert:
+            db_path: database.db
+            table: emails
+            records:
+              - email_id: 3
+                subject: "Hello World 2"
+                body: "This is the body of the email"
+              - email_id: 4
+                subject: "Hello World 3"
+                body: "This is the body of the email"
+              - email_id: 5
+                subject: "Hello World 4"
+                body: "This is the body of the email"
+          register: bulk_insert_result
+      rescue:
+        - name: If the error is UNIQUE constraint, try insert with "replace"
+          ttafsir.sqlite_utils.insert:
+            db_path: database.db
+            table: emails
+            records:
+              - email_id: 3
+                subject: "Hello World 2"
+                body: "This is the body of the email"
+              - email_id: 4
+                subject: "Hello World 3"
+                body: "This is the body of the email"
+              - email_id: 5
+                subject: "Hello World 4"
+                body: "This is the body of the email"
+            replace: true
+          register: bulk_insert_result
+          when:  "'UNIQUE constraint failed' in bulk_insert_result.msg"
+
+    - name: Fetch data from database
+      ttafsir.sqlite_utils.run_sql:
+        db_path: database.db
+        query: "SELECT * FROM emails ORDER BY email_id"
+      register: query_result
+
+    - name: TEST | verify that row count is 4
+      assert:
+        that:
+          - query_result.rows|length == 5
+        fail_msg: "The number of rows in the emails do not match"
+
+    - name: Fetch data based on ID
+      ttafsir.sqlite_utils.run_sql:
+        db_path: database.db
+        query: "SELECT * FROM emails WHERE email_id = ?;"
+        params: [3]
+      register: query_result_params
+
+    - name: TEST | Fetch data based on ID
+      assert:
+        that:
+          - query_result_params.rows[0].subject == where_arg.subject
+        fail_msg: "The subject of the email with ID 4 is not {{ where_arg.subject }}"
+
+    - name: Fetch data based on name and age
+      ttafsir.sqlite_utils.run_sql:
+        db_path: database.db
+        query: |-
+          SELECT * FROM emails
+          WHERE subject = :subject
+          AND email_id = :email_id
+        params:
+          subject: "Hello World"
+          email_id: 1
+      register: query_result_params
+
+    - name: Update data based on ID
+      ttafsir.sqlite_utils.run_sql:
+        db_path: database.db
+        query: "UPDATE emails SET subject = ? WHERE email_id = ?;"
+        params: ["Hello World Updated", 1]
+      register: update_result
