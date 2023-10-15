@@ -58,7 +58,7 @@
                 body: "This is the body of the email"
             replace: true
           register: bulk_insert_result
-          when:  "'UNIQUE constraint failed' in bulk_insert_result.msg"
+          when: "'UNIQUE constraint failed' in bulk_insert_result.msg"
 
     - name: Fetch data from database
       ttafsir.sqlite_utils.run_sql:
