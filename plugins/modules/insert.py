@@ -201,7 +201,7 @@ def run_module():
         records = module.params["records"]
 
         before_count = table.count
-        insert_result = insert_records(table, records, module)
+        insert_records(table, records, module)
 
         result["changed"] = table.count > before_count
         result["rows"] = table.count
