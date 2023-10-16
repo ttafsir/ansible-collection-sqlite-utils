@@ -125,88 +125,47 @@ EXAMPLES = r"""
         age: 3
 """
 from ansible.module_utils.basic import AnsibleModule
-
-try:
-    from sqlite_utils import Database
-
-    HAS_SQLITE_UTILS = True
-except ImportError:
-    HAS_SQLITE_UTILS = False
+from ansible_collections.ttafsir.sqlite_utils.plugins.module_utils.common import (
+    SqliteUtilsModule,
+    insert_arg_spec,
+)
 
 
-def insert_records(table, records, module):
-    if isinstance(records, list):
-        table.insert_all(
-            records,
-            pk=module.params["pk"],
-            column_order=module.params["column_order"],
-            not_null=module.params["not_null"],
-            defaults=module.params["defaults"],
-            hash_id=module.params["hash_id"],
-            alter=module.params["alter"],
-            ignore=module.params["ignore"],
-            replace=module.params["replace"],
-            extracts=module.params["extracts"],
-            conversions=module.params["conversions"],
-            columns=module.params["columns"],
-        )
-    else:
-        # Insert the record
-        insert_result = table.insert(
-            record=module.params["records"],
-            pk=module.params["pk"],
-            column_order=module.params["column_order"],
-            not_null=module.params["not_null"],
-            defaults=module.params["defaults"],
-            hash_id=module.params["hash_id"],
-            alter=module.params["alter"],
-            ignore=module.params["ignore"],
-            replace=module.params["replace"],
-            extracts=module.params["extracts"],
-            conversions=module.params["conversions"],
-            columns=module.params["columns"],
-        )
-
-    return insert_result
+def insert_records(table, module):
+    records = module.params["records"]
+    func = table.insert_all if isinstance(records, list) else table.insert
+    return func(
+        records,
+        pk=module.params["pk"],
+        column_order=module.params["column_order"],
+        not_null=module.params["not_null"],
+        defaults=module.params["defaults"],
+        hash_id=module.params["hash_id"],
+        alter=module.params["alter"],
+        ignore=module.params["ignore"],
+        replace=module.params["replace"],
+        extracts=module.params["extracts"],
+        conversions=module.params["conversions"],
+        columns=module.params["columns"],
+    )
 
 
 def run_module():
-    module_args = dict(
-        db_path=dict(type="str", required=True),
-        table=dict(type="str", required=True),
-        records=dict(type="raw", required=True),
-        pk=dict(type="str", default=None),
-        column_order=dict(type="list", elements="raw", default=None),
-        not_null=dict(type="list", elements="raw", default=None),
-        defaults=dict(type="dict", default=None),
-        hash_id=dict(type="str", default=None),
-        alter=dict(type="bool", default=False),
-        ignore=dict(type="bool", default=False),
-        replace=dict(type="bool", default=False),
-        extracts=dict(type="raw", default=None),
-        conversions=dict(type="dict", default=None),
-        columns=dict(type="dict", default=None),
-    )
-
-    result = dict(changed=False, message="")
-
-    module = AnsibleModule(argument_spec=module_args, supports_check_mode=True)
-
-    if module.check_mode:
-        return result
+    module_args = insert_arg_spec()
+    mod = AnsibleModule(argument_spec=module_args, supports_check_mode=False)
+    module = SqliteUtilsModule(mod)
 
     try:
-        db = Database(module.params["db_path"])
+        db = module.get_db()
         table = db[module.params["table"]]
-        records = module.params["records"]
 
         before_count = table.count
-        insert_records(table, records, module)
+        insert_records(table, module)
 
-        result["changed"] = table.count > before_count
-        result["rows"] = table.count
-        result["message"] = "Data inserted successfully"
-        module.exit_json(**result)
+        module.result["changed"] = table.count > before_count
+        module.result["rows"] = table.count
+        module.result["message"] = "Data inserted successfully"
+        module.exit_json(**module.result)
 
     except Exception as e:
         module.fail_json(msg=f"Failed to insert data. Error: {str(e)}")
