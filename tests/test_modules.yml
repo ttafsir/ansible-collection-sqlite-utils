@@ -149,4 +149,3 @@
           FROM pseudowires p, DeviceInterface di
           ORDER BY p.rowid;
       register: query_result
-
