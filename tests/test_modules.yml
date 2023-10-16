@@ -100,6 +100,53 @@
     - name: Update data based on ID
       ttafsir.sqlite_utils.run_sql:
         db_path: database.db
-        query: "UPDATE emails SET subject = ? WHERE email_id = ?;"
+        query: UPDATE emails SET subject = ? WHERE email_id = ?
         params: ["Hello World Updated", 1]
+        sql_method: execute
       register: update_result
+
+    - name: Insert from json file
+      ttafsir.sqlite_utils.insert_json:
+        db_path: network.db
+        table: "{{ item }}"
+        file_path: "{{ item }}.json"
+        flatten: true
+        alter: true
+      loop:
+        - interfaces
+        - policy_maps
+        - pseudowires
+
+    - name: Fetch data from database
+      ttafsir.sqlite_utils.run_sql:
+        db_path: network.db
+        query: |-
+          -- Calculate the total count of pseudowires.
+          WITH PseudowireCount AS (
+              SELECT COUNT(*) as total FROM pseudowires
+          ),
+
+          -- Fetch device and interface names from the 'interfaces' table for 'DUT'.
+          DeviceInterface AS (
+              SELECT
+                  MAX(device) as device,
+                  MAX(CASE WHEN rowid = 1 THEN name ELSE NULL END) as first_interface,
+                  MAX(CASE WHEN rowid = 2 THEN name ELSE NULL END) as second_interface
+              FROM interfaces
+              WHERE device = 'DUT'
+          )
+
+          -- Main Query
+          SELECT
+              di.device as device_name,
+              CASE
+                  WHEN p.rowid <= (SELECT total/2 FROM PseudowireCount) THEN di.first_interface
+                  ELSE di.second_interface
+              END as interface_name,
+              p.service_id,
+              p.primary_vlan,
+              p.vlans
+          FROM pseudowires p, DeviceInterface di
+          ORDER BY p.rowid;
+      register: query_result
+

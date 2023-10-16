@@ -1,0 +1,7 @@
+[
+        {"device": "DUT", "name": "TenGigE0/3/0/1"},
+        {"device": "DUT", "name": "TenGigE0/3/0/2"},
+        {"device": "REMOTE", "name": "TenGigE0/2/0/1"},
+        {"device": "REMOTE", "name": "TenGigE0/2/0/2"}
+
+]
