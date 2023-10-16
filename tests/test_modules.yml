@@ -69,7 +69,7 @@
     - name: TEST | verify that row count is 4
       assert:
         that:
-          - query_result.rows|length == 5
+          - query_result.rows|length == 4
         fail_msg: "The number of rows in the emails do not match"
 
     - name: Fetch data based on ID
