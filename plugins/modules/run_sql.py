@@ -47,6 +47,14 @@ options:
     required: False
     type: raw
 
+  sql_method:
+    description:
+      - Specifies the type of SQL statement to execute.
+    required: False
+    type: str
+    choices: ["query", "execute"]
+    default: "query"
+
 author:
   - Tafsir Thiam (@ttafsir)
 
@@ -85,77 +93,63 @@ EXAMPLES = r"""
     db_path: database.sqlite
     query: "UPDATE emails SET subject = ? WHERE email_id = ?;"
     params: ["Hello World Updated", 1]
+  sql_method: execute
 """
-
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils._text import to_text
+from ansible_collections.ttafsir.sqlite_utils.plugins.module_utils.common import (
+    SqliteUtilsModule,
+)
+
 import sqlite3
-import os
-
-try:
-    import sqlite_utils
-
-    HAS_SQLITE_UTILS = True
-except ImportError:
-    HAS_SQLITE_UTILS = False
 
 
-class SQLiteDatabaseModule(AnsibleModule):
-    def __init__(self, *args, **kwargs):
-        super(SQLiteDatabaseModule, self).__init__(*args, **kwargs)
+def run_sql(module):
+    db_options = module.params["db_options"] or {}
+    db = module.get_db(**db_options)
 
-        if not HAS_SQLITE_UTILS:
-            self.fail_json(
-                msg="The sqlite-utils library is required (`pip install sqlite-utils`)"
-            )
+    query = module.params["query"]
+    params = module.params["params"]
 
-    def run_sql(self, db_path: str, query, params=None, db_options=None):
-        if not os.path.exists(db_path):
-            self.fail_json(
-                msg=f"Database path {db_path} does not exist or is not accessible."
-            )
-        elif not os.path.isfile(db_path):
-            self.fail_json(msg=f"The path {db_path} is not a file.")
-        elif not os.access(db_path, os.R_OK):
-            self.fail_json(msg=f"The file at {db_path} is not readable.")
+    try:
+        # Check if it's a SELECT query
+        if module.params["sql_method"] == "query":
+            results = db.query(query, params)
+            return (False, {"rows": list(results)})
 
-        try:
-            db = sqlite_utils.Database(db_path, **(db_options or {}))
-
-            # Check if it's a SELECT query
-            if query.strip().upper().startswith("SELECT"):
-                results = db.query(query, params)
-                return (False, {"rows": list(results)})
-
-            # Handle non-SELECT queries
+        # Handle non-SELECT queries
+        if module.params["sql_method"] == "execute":
             cursor = db.execute(query, params)
             changed = cursor.rowcount > 0
             return (changed, {"rows_affected": cursor.rowcount})
 
-        except sqlite3.Error as db_err:
-            self.fail_json(msg=f"Database error: {to_text(db_err)}")
-        except Exception as e:
-            self.fail_json(msg=to_text(e))
+    except sqlite3.Error as db_err:
+        module.fail_json(msg=f"Database error: {to_text(db_err)}")
+    except Exception as e:
+        module.fail_json(msg=to_text(e))
 
 
 def main():
-    module = SQLiteDatabaseModule(
-        argument_spec=dict(
-            db_path=dict(type="str", required=True),
-            query=dict(type="str", required=True),
-            params=dict(type="raw", required=False, default=None),
-            db_options=dict(type="raw", required=False, default=None),
-        ),
-        supports_check_mode=True,
+    module = SqliteUtilsModule(
+        AnsibleModule(
+            argument_spec=dict(
+                db_path=dict(type="str", required=True),
+                query=dict(type="str", required=True),
+                params=dict(type="raw", required=False, default=None),
+                db_options=dict(type="raw", required=False, default=None),
+                sql_method=dict(
+                    type="str",
+                    required=False,
+                    default="query",
+                    choices=["query", "execute"],
+                ),
+            ),
+            supports_check_mode=True,
+        )
     )
 
-    db_path = module.params["db_path"]
-    query = module.params["query"]
-    params = module.params["params"]
-    db_options = module.params["db_options"]
-
     try:
-        changed, result = module.run_sql(db_path, query, params, db_options)
+        changed, result = run_sql(module)
         module.exit_json(changed=changed, **result)
     except Exception as e:
         module.fail_json(msg=to_text(e))
