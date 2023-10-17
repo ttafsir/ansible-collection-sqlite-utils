@@ -51,4 +51,6 @@ jobs:
       - name: Run tests
         run: |
           cd tests
+          echo "Running tests on Ansible $(ansible --version)"
           ansible-playbook test_lookup.yml
+          ansible-playbook test_modules.yml
