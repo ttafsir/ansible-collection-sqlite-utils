@@ -19,8 +19,8 @@ A collection of Ansible plugins to manage SQLite databases leveraging the `sqlit
 
 * `ttafsir.sqlite_utils.run_sql`: Ansible module to query a sqlite database and return list of dictionaries.
 * `ttafsir.sqlite_utils.create`: Ansible module create a table. The module will also create a database file if it doesn't exist.
-* `ttafsri.sqlite_utils.insert`: Ansible module to insert records into a database table. Supports inserting single and multiple records with a single dictionary or list of dictionaries.
-* `ttafsri.sqlite_utils.insert_json`: Ansible module to insert records into a database table from JSON files.
+* `ttafsirsqlite_utils.insert`: Ansible module to insert records into a database table. Supports inserting single and multiple records with a single dictionary or list of dictionaries.
+* `ttafsirsqlite_utils.insert_json`: Ansible module to insert records into a database table from JSON files.
 
 #### Lookup Plugins
 
